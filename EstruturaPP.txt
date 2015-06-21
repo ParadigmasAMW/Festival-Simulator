@@ -1,0 +1,27 @@
+EstruturaPP.txt
+
+
+Agentes:
+
+	Festival:
+		- Iniciar festival;
+		- Trocar banda;
+		- Finalizar festival;
+	
+	Banda:
+		- Tocar Música;
+		- Animar o Público;
+		- Usar entorpecentes;
+
+
+	Acompanhate:
+		- Vaiar; 
+		- Aplaudir;
+		- Criticar;
+		- Elogiar;
+		- Pagar peitinho;
+	
+	Fãs Extends Acompanhante:
+		- + 50 % de aplaudir;
+		- + 50 % de elogiar; 
+
