@@ -15,7 +15,7 @@ public class BandGui extends JFrame {
     	
     	JPanel panel = new JPanel();
     	panel.setLayout(new GridLayout(2,2));
-		this.setTitle("Band " + agent.getLocalName() + " Controller! |..|,");
+		this.setTitle(agent.getLocalName() + " Controller! |..|,");
 		
 		
 		JButton startShowButton = new JButton("Começar o Show!");
@@ -32,7 +32,7 @@ public class BandGui extends JFrame {
 			}
 		});
 		
-		JButton playMusicButton = new JButton("Começar o Show!");
+		JButton playMusicButton = new JButton("Começar música!");
 		playMusicButton.addActionListener(new ActionListener() {
 			
 			@Override

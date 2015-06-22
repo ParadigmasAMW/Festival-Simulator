@@ -1,5 +1,6 @@
 package agents;
 import examples.content.Receiver;
+import gui.FestivalGui;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
@@ -16,8 +17,11 @@ import jade.tools.testagent.ReceiveCyclicBehaviour;
 public class FestivalAgent extends Agent {
 
 	private static final long serialVersionUID = 1L;
-
+	private FestivalGui gui;
+	
 	protected void setup(){
+		gui = new FestivalGui(this);
+		
 		DFAgentDescription dfd = new DFAgentDescription();
 		dfd.setName(this.getAID());
 		ServiceDescription sd = new ServiceDescription();
