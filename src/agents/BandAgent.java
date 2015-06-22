@@ -1,3 +1,5 @@
+package agents;
+import gui.BandGui;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
@@ -15,8 +17,10 @@ public class BandAgent extends Agent {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private BandGui gui;
 
-	protected void setUp() {
+	protected void setup() {
+		gui = new BandGui(this);
 
 		DFAgentDescription dfd = new DFAgentDescription();
 		dfd.setName(this.getAID());
@@ -30,12 +34,6 @@ public class BandAgent extends Agent {
 		} catch (FIPAException fe) {
 			fe.printStackTrace();
 		}
-
-		addBehaviour(new PlayMusic());
-
-		addBehaviour(new CheerPublic());
-
-		addBehaviour(new UseDrugs());
 	}
 
 	private class PlayMusic extends CyclicBehaviour {
@@ -73,6 +71,56 @@ public class BandAgent extends Agent {
 			msg.setContent("Using some Drugs !!!");
 			send(msg);
 		}
+	}
+	
+	private class StartShow extends OneShotBehaviour{
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public void action() {
+			// TODO Auto-generated method stub
+			ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+		    msg.addReceiver(new	AID("Banda", AID.ISLOCALNAME));
+			msg.setLanguage("English"); 
+			msg.setContent("Starting the show !!!");
+			send(msg);
+		}
+		
+	}
+	
+	private class StopShow extends OneShotBehaviour{
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public void action() {
+			// TODO Auto-generated method stub
+			ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+		    msg.addReceiver(new	AID("Banda", AID.ISLOCALNAME));
+			msg.setLanguage("English"); 
+			msg.setContent("Stopping the show !!!");
+			send(msg);
+		}
+		
+	}
+	
+	public void startShow() {
+		addBehaviour(new StartShow());
+	}
+	
+	public void cheerPublic() {
+		addBehaviour(new CheerPublic());
+	}
+	
+	public void useDrugs() {
+		addBehaviour(new UseDrugs());
+	}
+	
+	public void playMusic() {
+		addBehaviour(new PlayMusic());
+	}
+	
+	public void stopShow() {
+		addBehaviour(new StopShow());
 	}
 
 	protected void takeDown() {
