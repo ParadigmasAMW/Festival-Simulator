@@ -1,7 +1,7 @@
 import jade.core.Agent;
 
 
-public class Companion extends Agent implements Public{
+public class EnthusiastAgent extends Agent implements Public{
 
 	/**
 	 * 
