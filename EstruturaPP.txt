@@ -12,6 +12,7 @@ Agentes:
 		- Tocar Música;
 		- Animar o Público;
 		- Usar entorpecentes;
+		- Parar de tocar;
 
 
 	Acompanhate:
