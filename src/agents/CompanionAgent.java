@@ -4,9 +4,6 @@ import jade.core.Agent;
 
 public class CompanionAgent extends Agent implements Public{
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	@Override
