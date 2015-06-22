@@ -18,7 +18,9 @@ import jade.lang.acl.MessageTemplate;
 import jade.tools.testagent.ReceiveCyclicBehaviour;
 import jade.wrapper.AgentContainer;
 import jade.wrapper.AgentController;
+import jade.wrapper.ControllerException;
 import jade.wrapper.PlatformController;
+import jade.wrapper.StaleProxyException;
 
 
 public class FestivalAgent extends Agent {
@@ -26,8 +28,8 @@ public class FestivalAgent extends Agent {
 	private static final long serialVersionUID = 1L;
 	private FestivalGui gui;
 	
-	protected Vector publicList = new Vector();
-	protected int publicCount = 0;
+	protected AgentController actualBand;
+	protected Vector<AgentController> publicList = new Vector<AgentController>();
 	
 	protected void setup(){
 		gui = new FestivalGui(this);
@@ -47,7 +49,7 @@ public class FestivalAgent extends Agent {
 
 	}
 	
-	private class StartFestival extends CyclicBehaviour {
+	private class StartFestival extends OneShotBehaviour {
 
 		private static final long serialVersionUID = 1L;
 
@@ -95,22 +97,48 @@ public class FestivalAgent extends Agent {
 	}
 	
 	public void startFestival(){
-		PlatformController c = getContainerController();
-		try {
-			AgentController agent = c.createNewAgent("Banda 1", "agents.BandAgent", null);
-			agent.start();
-		} catch (Exception e) {}
-		
+		startBand("Banda 1");
 		addBehaviour(new StartFestival());
 		invitePublic(10);
 	}
 	
 	public void changeBand(){
 		addBehaviour(new ChangeBand());
+		try {
+			actualBand.kill();
+		} catch (StaleProxyException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		startBand("Banda 2");
 	}
 	
 	public void finishFestival(){
 		addBehaviour(new FinishFestival());
+	}
+	
+	protected void startBand(String bandName) {
+		PlatformController c = getContainerController();
+		AgentController agent;
+		try {
+			agent = c.createNewAgent(bandName, "agents.BandAgent", null);
+			agent.start();
+			actualBand = agent;
+		} catch (ControllerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	protected void takeDown() {
+		for(AgentController agent : publicList) {
+			try {
+				agent.kill();
+			} catch (StaleProxyException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	protected void invitePublic(int publicSize) {
