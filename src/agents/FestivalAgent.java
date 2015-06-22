@@ -24,12 +24,16 @@ import jade.wrapper.StaleProxyException;
 
 
 public class FestivalAgent extends Agent {
+	
+	// MESSAGE TYPES
+	public final static String LETSROCK = "LETSROCK";
 
 	private static final long serialVersionUID = 1L;
 	private FestivalGui gui;
 	
-	protected AgentController actualBand;
+	protected Vector<AgentController> bandList = new Vector<AgentController>();
 	protected Vector<AgentController> publicList = new Vector<AgentController>();
+	protected int publicCount = 0;
 	
 	protected void setup(){
 		gui = new FestivalGui(this);
@@ -61,6 +65,25 @@ public class FestivalAgent extends Agent {
 			}
 			else {
 				block();
+			}
+		}
+		
+	}
+	
+	private class ListenPublic extends CyclicBehaviour {
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public void action() {
+			// TODO Auto-generated method stub
+			ACLMessage msg = receive();
+			
+			if(msg != null) {
+				if(LETSROCK.equals(msg.getContent())){
+					// Set festival state
+					publicCount++;
+					System.out.println(msg.getSender().getLocalName() + " join to festival!");
+				}
 			}
 		}
 		
@@ -100,12 +123,13 @@ public class FestivalAgent extends Agent {
 		startBand("Banda 1");
 		addBehaviour(new StartFestival());
 		invitePublic(10);
+		addBehaviour(new ListenPublic());
 	}
 	
 	public void changeBand(){
 		addBehaviour(new ChangeBand());
 		try {
-			actualBand.kill();
+			bandList.lastElement().kill();
 		} catch (StaleProxyException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -123,7 +147,7 @@ public class FestivalAgent extends Agent {
 		try {
 			agent = c.createNewAgent(bandName, "agents.BandAgent", null);
 			agent.start();
-			actualBand = agent;
+			bandList.add(agent);
 		} catch (ControllerException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

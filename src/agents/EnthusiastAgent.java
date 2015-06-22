@@ -1,5 +1,7 @@
 package agents;
+
 import gui.BandGui;
+import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
 import jade.core.behaviours.CyclicBehaviour;
@@ -8,6 +10,7 @@ import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
+import jade.lang.acl.ACLMessage;
 
 
 public class EnthusiastAgent extends Agent implements Public{
@@ -28,6 +31,11 @@ public class EnthusiastAgent extends Agent implements Public{
 		} catch (FIPAException fe) {
 			fe.printStackTrace();
 		}
+		
+		ACLMessage letsRock = new ACLMessage(ACLMessage.INFORM);
+		letsRock.setContent(FestivalAgent.LETSROCK);
+		letsRock.addReceiver(new AID("RockInParadigmas", AID.ISLOCALNAME));
+		send(letsRock);
 	}
 	private class Applause extends CyclicBehaviour{
 
