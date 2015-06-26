@@ -21,6 +21,9 @@ public class FestivalGui extends JFrame {
     
     private Label publicCountLabel = new Label("Festival vazio :(");
     private Label actualBandLabel = new Label("Nenhuma banda tocando");
+    
+    private Label likesLabel = new Label("0 pessoas estão curtindo o show!");
+    private Label dislikesLabel = new Label("0 pessoas não estão curtindo...");
 
     public FestivalGui(FestivalAgent agent){
     	festival = agent;
@@ -77,6 +80,9 @@ public class FestivalGui extends JFrame {
 		
 		bandPublicBox.add(publicCountLabel);
 		bandPublicBox.add(actualBandLabel);
+		
+		publicRateBox.add(likesLabel);
+		publicRateBox.add(dislikesLabel);
 		
 		panel.add(startFestivalButton);
 		panel.add(changeBandButton);

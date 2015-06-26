@@ -1,11 +1,7 @@
 package agents;
 
-import java.util.Random;
-
-import gui.BandGui;
 import jade.core.AID;
 import jade.core.Agent;
-import jade.core.behaviours.Behaviour;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.domain.DFService;
@@ -14,6 +10,8 @@ import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
 
+import java.util.Random;
+
 
 public class EnthusiastAgent extends Agent implements Public{
 
@@ -21,6 +19,7 @@ public class EnthusiastAgent extends Agent implements Public{
 	private String musicStyle;
 
 	protected void setup() {
+		setMusicStyle();
 
 		DFAgentDescription dfd = new DFAgentDescription();
 		dfd.setName(this.getAID());

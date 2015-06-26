@@ -24,9 +24,13 @@ public class FestivalAgent extends Agent {
 	// MESSAGE TYPES
 	public final static String LETSROCK = "LETSROCK";
 	public final static String FESTIVALSTOPPED = "FESTIVALSTOPPED";
+	public final static String LIKE = "LIKE";
+	public final static String DISLIKE = "DISLIKE";
 
 	private static final long serialVersionUID = 1L;
 	private FestivalGui gui;
+	private int likes = 0;
+	private int dislikes = 0;
 	
 	protected AgentController actualBand;
 	protected Vector<AgentController> publicList = new Vector<AgentController>();
@@ -81,6 +85,12 @@ public class FestivalAgent extends Agent {
 					publicCount++;
 					System.out.println(msg.getSender().getLocalName() + " join to festival!");
 					gui.setPublicCount("Publico: " + publicCount);
+				} else if(LIKE.equals(msg.getContent())) {
+					setLikes(getLikes() + 1);
+					System.out.println(msg.getSender().getLocalName() + " liked the band!");
+				} else if(DISLIKE.equals(msg.getContent())) {
+					setDislikes(getDislikes() + 1);
+					System.out.println(msg.getSender().getLocalName() + " disliked the band!");
 				}
 			}
 		}
@@ -198,5 +208,21 @@ public class FestivalAgent extends Agent {
 				publicList.add(agent);
 			}
 		} catch (Exception e) {}
+	}
+
+	public int getLikes() {
+		return likes;
+	}
+
+	public void setLikes(int likes) {
+		this.likes = likes;
+	}
+
+	public int getDislikes() {
+		return dislikes;
+	}
+
+	public void setDislikes(int dislikes) {
+		this.dislikes = dislikes;
 	}
 }
