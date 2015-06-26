@@ -1,8 +1,4 @@
 package agents;
-import java.util.Random;
-import java.util.Vector;
-
-import examples.content.Receiver;
 import gui.FestivalGui;
 import jade.core.AID;
 import jade.core.Agent;
@@ -12,15 +8,15 @@ import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
-import jade.domain.JADEAgentManagement.CreateAgent;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-import jade.tools.testagent.ReceiveCyclicBehaviour;
-import jade.wrapper.AgentContainer;
 import jade.wrapper.AgentController;
 import jade.wrapper.ControllerException;
 import jade.wrapper.PlatformController;
 import jade.wrapper.StaleProxyException;
+
+import java.util.Random;
+import java.util.Vector;
 
 
 public class FestivalAgent extends Agent {
@@ -31,7 +27,7 @@ public class FestivalAgent extends Agent {
 	private static final long serialVersionUID = 1L;
 	private FestivalGui gui;
 	
-	protected Vector<AgentController> bandList = new Vector<AgentController>();
+	protected AgentController actualBand;
 	protected Vector<AgentController> publicList = new Vector<AgentController>();
 	protected int publicCount = 0;
 	
@@ -94,15 +90,17 @@ public class FestivalAgent extends Agent {
 		private static final long serialVersionUID = 1L;
 
 		@Override
-		public void action(){
-			ACLMessage msg = myAgent.receive();
-			if(msg !=null) {
-			// Message received. Process it
-				ACLMessage reply = msg.createReply();
-				reply.setPerformative(ACLMessage.INFORM);
-				reply.setContent("Changing Band !!!");
+		public void action(){			
+			ACLMessage stopShow = new ACLMessage(ACLMessage.INFORM);
+			stopShow.setContent(BandAgent.STOPSHOW);
+			try {
+				stopShow.addReceiver(new AID(actualBand.getName(), AID.ISGUID));
+				send(stopShow);
+			} catch (StaleProxyException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-				myAgent.send(msg);
+			startBand("Banda 2");
 		}
 		
 	}
@@ -128,13 +126,6 @@ public class FestivalAgent extends Agent {
 	
 	public void changeBand(){
 		addBehaviour(new ChangeBand());
-		try {
-			bandList.lastElement().kill();
-		} catch (StaleProxyException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		startBand("Banda 2");
 	}
 	
 	public void finishFestival(){
@@ -147,7 +138,7 @@ public class FestivalAgent extends Agent {
 		try {
 			agent = c.createNewAgent(bandName, "agents.BandAgent", null);
 			agent.start();
-			bandList.add(agent);
+			this.actualBand = agent;
 		} catch (ControllerException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

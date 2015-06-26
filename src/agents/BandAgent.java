@@ -13,15 +13,14 @@ import jade.lang.acl.MessageTemplate;
 
 public class BandAgent extends Agent {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
+
+	public final static String STOPSHOW = "STOPSHOW";
+	
+	
 	private BandGui gui;
 
 	protected void setup() {
-		gui = new BandGui(this);
-
 		DFAgentDescription dfd = new DFAgentDescription();
 		dfd.setName(this.getAID());
 		ServiceDescription sd = new ServiceDescription();
@@ -34,6 +33,28 @@ public class BandAgent extends Agent {
 		} catch (FIPAException fe) {
 			fe.printStackTrace();
 		}
+		
+		addBehaviour(new ListenFestivalOrders());
+	}
+	
+	private class ListenFestivalOrders extends CyclicBehaviour {
+		private static final long serialVersionUID = 1L;
+		
+		@Override
+		public void action() {
+			ACLMessage msg = receive();
+			
+			if(msg != null) {
+				if(STOPSHOW.equals(msg.getContent())){
+					// Set festival state
+					System.out.println(getName() + " stopping the show...");
+					doDelete();
+				}
+			}
+			
+			
+		}
+		
 	}
 
 	private class PlayMusic extends CyclicBehaviour {
