@@ -1,4 +1,6 @@
 package agents;
+import java.util.Random;
+
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
@@ -8,6 +10,7 @@ import jade.lang.acl.ACLMessage;
 public class CompanionAgent extends Agent implements Public{
 
 	private static final long serialVersionUID = 1L;
+	private String musicStyle;
 	
 	protected void setup() {
 		
@@ -69,4 +72,14 @@ public class CompanionAgent extends Agent implements Public{
 		
 	}
 
+	private void setMusicStyle() {
+		Random rand = new Random();
+		int number = rand.nextInt(11) + 1;
+
+		if (number % 2 == 0){
+			this.musicStyle = MusicStyle.BLUES;
+		} else {
+			this.musicStyle = MusicStyle.HEAVYMETAL;
+		}
+	}
 }
