@@ -102,7 +102,7 @@ public class FestivalAgent extends Agent {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			startBand("Dream Theater");
+			startBand("Banda 2");
 		}
 		
 	}
@@ -140,7 +140,7 @@ public class FestivalAgent extends Agent {
 	}
 	
 	public void startFestival(){
-		startBand("Iron Maiden");
+		startBand("Banda 1");
 		addBehaviour(new StartFestival());
 		invitePublic(10);
 		addBehaviour(new ListenPublic());

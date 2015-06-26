@@ -4,23 +4,25 @@ import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.OneShotBehaviour;
-import jade.lang.acl.ACLMessage;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
+import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
-public class BandAgent extends Agent {
+import java.util.Random;
 
+public class BandAgent extends Agent {
 	private static final long serialVersionUID = 1L;
 
 	public final static String STOPSHOW = "STOPSHOW";
 	
-	
+	private String musicStyle;
 	private BandGui gui;
 
 	protected void setup() {
+		setMusicStyle();
 		DFAgentDescription dfd = new DFAgentDescription();
 		dfd.setName(this.getAID());
 		ServiceDescription sd = new ServiceDescription();
@@ -151,8 +153,20 @@ public class BandAgent extends Agent {
 		} catch (FIPAException fe) {
 			fe.printStackTrace();
 		}
+	}
+	
+	private void setMusicStyle() {
+		Random rand = new Random();
+		int number = rand.nextInt(11) + 1;
 
-		System.out.println("");
+		if (number % 2 == 0){
+			this.musicStyle = MusicStyle.BLUES;
+		} else {
+			this.musicStyle = MusicStyle.HEAVYMETAL;
+		}
 	}
 
+	public String getMusicStyle() {
+		return musicStyle;
+	}
 }

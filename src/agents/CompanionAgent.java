@@ -30,7 +30,7 @@ public class CompanionAgent extends Agent implements Public{
 			
 			if(msg != null) {
 				if(FestivalAgent.FESTIVALSTOPPED.equals(msg.getContent())) {
-					System.out.println("Festival stopped. " + getName() + " leaving the show...");
+					System.out.println("Festival stopped. " + getName() + " leaving the festival...");
 					doDelete();
 				}
 			}
