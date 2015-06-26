@@ -1,5 +1,4 @@
 package agents;
-import gui.BandGui;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
@@ -9,20 +8,14 @@ import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
-import jade.lang.acl.MessageTemplate;
-
-import java.util.Random;
 
 public class BandAgent extends Agent {
 	private static final long serialVersionUID = 1L;
 
 	public final static String STOPSHOW = "STOPSHOW";
-	
-	private String musicStyle;
-	private BandGui gui;
+	public final static String STARTSHOW = "STARTSHOW";
 
 	protected void setup() {
-		setMusicStyle();
 		DFAgentDescription dfd = new DFAgentDescription();
 		dfd.setName(this.getAID());
 		ServiceDescription sd = new ServiceDescription();
@@ -37,6 +30,7 @@ public class BandAgent extends Agent {
 		}
 		
 		addBehaviour(new ListenFestivalOrders());
+		addBehaviour(new StartShow());
 	}
 	
 	private class ListenFestivalOrders extends CyclicBehaviour {
@@ -59,43 +53,6 @@ public class BandAgent extends Agent {
 		}
 		
 	}
-
-	private class PlayMusic extends CyclicBehaviour {
-		
-		private static final long serialVersionUID = 1L;
-
-		@Override
-		public void action() {
-			MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
-			jade.lang.acl.ACLMessage msg = myAgent.receive(mt);
-		}
-	}
-
-	private class CheerPublic extends OneShotBehaviour {
-		private static final long serialVersionUID = 1L;
-
-		@Override
-		public void action() {
-			ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
-		    msg.addReceiver(new	AID("Banda", AID.ISLOCALNAME));
-			msg.setLanguage("English"); 
-			msg.setContent("Put yours hands UP !!!");
-			send(msg);
-		}
-	}
-	
-	private class UseDrugs extends OneShotBehaviour {
-		private static final long serialVersionUID = 1L;
-		
-		@Override
-		public void action(){
-			ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
-		    msg.addReceiver(new	AID("Banda", AID.ISLOCALNAME));
-			msg.setLanguage("English"); 
-			msg.setContent("Using some Drugs !!!");
-			send(msg);
-		}
-	}
 	
 	private class StartShow extends OneShotBehaviour{
 		private static final long serialVersionUID = 1L;
@@ -104,9 +61,8 @@ public class BandAgent extends Agent {
 		public void action() {
 			// TODO Auto-generated method stub
 			ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
-		    msg.addReceiver(new	AID("Banda", AID.ISLOCALNAME));
-			msg.setLanguage("English"); 
-			msg.setContent("Starting the show !!!");
+		    msg.addReceiver(new	AID("RockInParadigmas", AID.ISLOCALNAME));
+			msg.setContent(STARTSHOW);
 			send(msg);
 		}
 		
@@ -130,19 +86,7 @@ public class BandAgent extends Agent {
 	public void startShow() {
 		addBehaviour(new StartShow());
 	}
-	
-	public void cheerPublic() {
-		addBehaviour(new CheerPublic());
-	}
-	
-	public void useDrugs() {
-		addBehaviour(new UseDrugs());
-	}
-	
-	public void playMusic() {
-		addBehaviour(new PlayMusic());
-	}
-	
+
 	public void stopShow() {
 		addBehaviour(new StopShow());
 	}
@@ -153,20 +97,5 @@ public class BandAgent extends Agent {
 		} catch (FIPAException fe) {
 			fe.printStackTrace();
 		}
-	}
-	
-	private void setMusicStyle() {
-		Random rand = new Random();
-		int number = rand.nextInt(11) + 1;
-
-		if (number % 2 == 0){
-			this.musicStyle = MusicStyle.BLUES;
-		} else {
-			this.musicStyle = MusicStyle.HEAVYMETAL;
-		}
-	}
-
-	public String getMusicStyle() {
-		return musicStyle;
 	}
 }

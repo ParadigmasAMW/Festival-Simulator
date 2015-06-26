@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
@@ -18,12 +19,16 @@ public class FestivalGui extends JFrame {
     private FestivalAgent festival;
     private Box bandPublicBox;
     private Box publicRateBox;
+    private Box resultBox;
     
     private Label publicCountLabel = new Label("Festival vazio :(");
     private Label actualBandLabel = new Label("Nenhuma banda tocando");
     
     private Label likesLabel = new Label("0 pessoas estão curtindo o show!");
     private Label dislikesLabel = new Label("0 pessoas não estão curtindo...");
+    
+    private Label resultLabel = new Label();
+    private Label resultDetailLabel = new Label();
 
     public FestivalGui(FestivalAgent agent){
     	festival = agent;
@@ -31,6 +36,7 @@ public class FestivalGui extends JFrame {
     	JPanel panel = new JPanel();
     	bandPublicBox = Box.createVerticalBox();
     	publicRateBox = Box.createVerticalBox();
+    	resultBox = Box.createVerticalBox();
     	
     	panel.setLayout(new GridLayout(2,3));
 		this.setTitle(agent.getLocalName() + " Controller! |..|,");
@@ -84,12 +90,15 @@ public class FestivalGui extends JFrame {
 		publicRateBox.add(likesLabel);
 		publicRateBox.add(dislikesLabel);
 		
+		resultBox.add(resultLabel);
+		resultBox.add(resultDetailLabel);
+		
 		panel.add(startFestivalButton);
 		panel.add(changeBandButton);
 		panel.add(finishFestivalButton);
 		panel.add(bandPublicBox);
 		panel.add(publicRateBox);
-
+		panel.add(resultBox);
 		
 		getContentPane().add(panel, BorderLayout.CENTER);
 		this.setSize(900, 200);
@@ -102,5 +111,21 @@ public class FestivalGui extends JFrame {
 	
 	public void setActualBand(String message) {
 		this.actualBandLabel.setText(message);
+	}
+	
+	public void increaseLike(String message) {
+		this.likesLabel.setText(message);
+	}
+	
+	public void increaseDislike(String message) {
+		this.dislikesLabel.setText(message);
+	}
+	
+	public void setResultLabel(String message) {
+		this.resultLabel.setText(message);
+	}
+	
+	public void setResultDetailsLabel(String message) {
+		this.resultDetailLabel.setText(message);
 	}
 }

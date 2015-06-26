@@ -1,26 +1,25 @@
 package agents;
 
+import java.util.Random;
+
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.OneShotBehaviour;
+import jade.core.behaviours.TickerBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
 
-import java.util.Random;
 
-
-public class EnthusiastAgent extends Agent implements Public{
+public class EnthusiastAgent extends Agent {
 
 	private static final long serialVersionUID = 1L;
-	private String musicStyle;
+	private Boolean liked = false;
 
 	protected void setup() {
-		setMusicStyle();
-
 		DFAgentDescription dfd = new DFAgentDescription();
 		dfd.setName(this.getAID());
 		ServiceDescription sd = new ServiceDescription();
@@ -39,122 +38,56 @@ public class EnthusiastAgent extends Agent implements Public{
 		letsRock.addReceiver(new AID("RockInParadigmas", AID.ISLOCALNAME));
 		send(letsRock);
 		
-		addBehaviour(new ListenFestivalOrders());
-	}
-	
-	private class Applause extends CyclicBehaviour{
-
-		private static final long serialVersionUID = 1L;
-
-		@Override
-		public void action() {
-			// TODO Auto-generated method stub
-			
-		}
-		
-	}
-	
-	private class ListenFestivalOrders extends CyclicBehaviour {
-		private static final long serialVersionUID = 1L;
-		
-		@Override
-		public void action() {
-			// TODO Auto-generated method stub
-			ACLMessage msg = receive();
-			
-			if(msg != null) {
-				if(FestivalAgent.FESTIVALSTOPPED.equals(msg.getContent())) {
-					System.out.println("Festival stopped. " + getName() + " leaving the festival...");
-					doDelete();
-				}
-			}
-			
-		}
-		
-	}
-	
-	private class Boo extends CyclicBehaviour{
-
-		private static final long serialVersionUID = 1L;
-
-		@Override
-		public void action() {
-			// TODO Auto-generated method stub
-			
-		}
-		
-	}
-	
-	private class Criticize extends OneShotBehaviour{
-
-		private static final long serialVersionUID = 1L;
-
-		@Override
-		public void action() {
-			// TODO Auto-generated method stub
-			
-		}
-		
-	}
-	
-	private class Praise extends OneShotBehaviour{
-
-		private static final long serialVersionUID = 1L;
-
-		@Override
-		public void action() {
-			// TODO Auto-generated method stub
-			
-		}
-		
-	}
-	
-	private class ShowBoobs extends OneShotBehaviour{
-
-		private static final long serialVersionUID = 1L;
-
-		@Override
-		public void action() {
-			// TODO Auto-generated method stub
-			
-		}
-		
-	}
-	
-	@Override
-	public void applause() {
-		addBehaviour(new Applause());
-	}
-
-	@Override
-	public void boo() {
-		addBehaviour(new Boo());
-	}
-
-	@Override
-	public void criticize() {
-		addBehaviour(new Criticize());
-	}
-
-	@Override
-	public void praise() {
-		addBehaviour(new Praise());
-	}
-
-	@Override
-	public void showBoobs() {
-		addBehaviour( new ShowBoobs());
-	}
-	
-	private void setMusicStyle() {
 		Random rand = new Random();
-		int number = rand.nextInt(11) + 1;
+		
+		addBehaviour(new TickerBehaviour(this, rand.nextInt(3000) + 1000) {
 
-		if (number % 2 == 0){
-			this.musicStyle = MusicStyle.BLUES;
-		} else {
-			this.musicStyle = MusicStyle.HEAVYMETAL;
-		}
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			protected void onTick() {
+				// TODO Auto-generated method stub
+				ACLMessage msg = receive();
+				
+				if(msg != null) {
+					if(FestivalAgent.FESTIVALSTOPPED.equals(msg.getContent())) {
+						System.out.println("Festival stopped. " + getName() + " leaving the festival...");
+						ACLMessage publicLeft = new ACLMessage(ACLMessage.INFORM);
+						publicLeft.setContent(FestivalAgent.PUBLICLEFT);
+						publicLeft.addReceiver(new AID("RockInParadigmas", AID.ISLOCALNAME));
+						send(publicLeft);
+						doDelete();
+					} else if(BandAgent.STARTSHOW.equals(msg.getContent())) {
+						if(!liked) {
+							addBehaviour(new Applause());
+							liked = true;
+						}
+					} else if(FestivalAgent.CHANGEMUSIC.equals(msg.getContent())) {
+						if(liked) {
+							liked = false;
+						}
+					}
+				} 
+			}
+		});
 	}
+	
+	private class Applause extends OneShotBehaviour{
 
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public void action() {
+			// TODO Auto-generated method stub
+			ACLMessage praiseMessage = new ACLMessage(ACLMessage.INFORM);
+			praiseMessage.setContent(FestivalAgent.LIKE);
+			praiseMessage.addReceiver(new AID("RockInParadigmas", AID.ISLOCALNAME));
+			send(praiseMessage);
+		}
+		
+	}
+	
+	public void setLiked(Boolean status) {
+		this.liked = status;
+	}
 }

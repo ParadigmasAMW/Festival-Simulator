@@ -4,6 +4,7 @@ import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.OneShotBehaviour;
+import jade.core.behaviours.TickerBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
@@ -24,8 +25,10 @@ public class FestivalAgent extends Agent {
 	// MESSAGE TYPES
 	public final static String LETSROCK = "LETSROCK";
 	public final static String FESTIVALSTOPPED = "FESTIVALSTOPPED";
+	public final static String PUBLICLEFT = "PUBLICLEFT";
 	public final static String LIKE = "LIKE";
 	public final static String DISLIKE = "DISLIKE";
+	public final static String CHANGEMUSIC = "CHANGEMUSIC";
 
 	private static final long serialVersionUID = 1L;
 	private FestivalGui gui;
@@ -33,7 +36,7 @@ public class FestivalAgent extends Agent {
 	private int dislikes = 0;
 	
 	protected AgentController actualBand;
-	protected Vector<AgentController> publicList = new Vector<AgentController>();
+	private Vector<AgentController> publicList = new Vector<AgentController>();
 	protected int publicCount = 0;
 	
 	protected void setup(){
@@ -54,18 +57,30 @@ public class FestivalAgent extends Agent {
 
 	}
 	
-	private class StartFestival extends OneShotBehaviour {
+	private class CheckLikes extends TickerBehaviour {
 
 		private static final long serialVersionUID = 1L;
 
-		public void action() {
-			MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
-			ACLMessage msg = myAgent.receive(mt);
-			if (msg != null) {
-					System.out.println(" Festival has begun "+msg.getSender().getName());
-			}
-			else {
-				block();
+		public CheckLikes(Agent a, long period) {
+			super(a, period);
+			// TODO Auto-generated constructor stub
+		}
+
+		@Override
+		protected void onTick() {
+			// TODO Auto-generated method stub
+			if((likes + dislikes) == publicCount) {
+				if(likes >= dislikes) {
+					gui.setResultLabel("Parece que o pessoal gostou da banda!");
+					gui.setResultDetailsLabel("Próxima música!!");
+					addBehaviour(new ChangeMusic());
+				} else {
+					gui.setResultLabel("Parece que essa banda nao foi tao boa...");
+					gui.setResultDetailsLabel("Próxima banda!!");
+				}
+			} else {
+				gui.setResultLabel("");
+				gui.setResultDetailsLabel("");
 			}
 		}
 		
@@ -85,16 +100,22 @@ public class FestivalAgent extends Agent {
 					publicCount++;
 					System.out.println(msg.getSender().getLocalName() + " join to festival!");
 					gui.setPublicCount("Publico: " + publicCount);
+				} else if(BandAgent.STARTSHOW.equals(msg.getContent())) {
+					startedShowMessage();
 				} else if(LIKE.equals(msg.getContent())) {
 					setLikes(getLikes() + 1);
+					gui.increaseLike(getLikes() + " pessoas estão curtindo o show!");
 					System.out.println(msg.getSender().getLocalName() + " liked the band!");
 				} else if(DISLIKE.equals(msg.getContent())) {
 					setDislikes(getDislikes() + 1);
+					gui.increaseDislike(getDislikes() + " pessoas não estão curtindo...");
 					System.out.println(msg.getSender().getLocalName() + " disliked the band!");
+				} else if(PUBLICLEFT.equals(msg.getContent())) {
+					publicCount--;
+					gui.setPublicCount("Publico: " + publicCount);
 				}
 			}
 		}
-		
 	}
 	
 	private class ChangeBand extends OneShotBehaviour {
@@ -113,6 +134,35 @@ public class FestivalAgent extends Agent {
 				e.printStackTrace();
 			}
 			startBand("Banda 2");
+			addBehaviour(new ChangeMusic());
+		}	
+	}
+	
+	private class ChangeMusic extends OneShotBehaviour {
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public void action() {
+			// TODO Auto-generated method stub
+			likes = 0;
+			dislikes = 0;
+			gui.increaseLike(likes + " pessoas estão curtindo o show!");
+			gui.increaseDislike(dislikes + " pessoas não estão curtindo...");
+			
+			for(AgentController agent : publicList) {
+				ACLMessage newMusic = new ACLMessage(ACLMessage.INFORM);
+				newMusic.setContent(CHANGEMUSIC);
+				try {
+					newMusic.addReceiver(new AID(agent.getName(), AID.ISGUID));
+					send(newMusic);
+				} catch (StaleProxyException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
+			startedShowMessage();
+			
 		}
 		
 	}
@@ -149,15 +199,34 @@ public class FestivalAgent extends Agent {
 		
 	}
 	
+	private void startedShowMessage() {
+		ACLMessage startShow = new ACLMessage(ACLMessage.INFORM);
+		startShow.setContent(BandAgent.STARTSHOW);
+		for(AgentController agent : publicList) {
+			try {
+				startShow.addReceiver(new AID(agent.getName(), AID.ISGUID));
+				send(startShow);
+			} catch (StaleProxyException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
 	public void startFestival(){
 		startBand("Banda 1");
-		addBehaviour(new StartFestival());
-		invitePublic(10);
+		invitePublic(20);
+		addBehaviour(new CheckLikes(this, 3000));
 		addBehaviour(new ListenPublic());
 	}
 	
 	public void changeBand(){
+		gui.increaseLike("0 pessoas estão curtindo o show!");
+		gui.increaseDislike("0 pessoas não estão curtindo...");
+		this.likes = 0;
+		this.dislikes = 0;
 		addBehaviour(new ChangeBand());
+		startedShowMessage();
 	}
 	
 	public void finishFestival(){
