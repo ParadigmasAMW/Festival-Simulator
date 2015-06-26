@@ -79,6 +79,7 @@ public class FestivalAgent extends Agent {
 					// Set festival state
 					publicCount++;
 					System.out.println(msg.getSender().getLocalName() + " join to festival!");
+					gui.setPublicCount("Publico: " + publicCount);
 				}
 			}
 		}
@@ -138,7 +139,8 @@ public class FestivalAgent extends Agent {
 		try {
 			agent = c.createNewAgent(bandName, "agents.BandAgent", null);
 			agent.start();
-			this.actualBand = agent;
+			actualBand = agent;
+			gui.setActualBand(bandName + " se apresentando!! |..|,");
 		} catch (ControllerException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -9,13 +9,21 @@ import agents.FestivalAgent;
 
 public class FestivalGui extends JFrame {
     private static final long serialVersionUID = 1L;
-     private FestivalAgent festival;
+    private FestivalAgent festival;
+    private Box bandPublicBox;
+    private Box publicRateBox;
+    
+    private Label publicCountLabel = new Label("Festival vazio :(");
+    private Label actualBandLabel = new Label("Nenhuma banda tocando");
 
     public FestivalGui(FestivalAgent agent){
     	festival = agent;
     	
     	JPanel panel = new JPanel();
-    	panel.setLayout(new GridLayout(2,2));
+    	bandPublicBox = Box.createVerticalBox();
+    	publicRateBox = Box.createVerticalBox();
+    	
+    	panel.setLayout(new GridLayout(2,3));
 		this.setTitle(agent.getLocalName() + " Controller! |..|,");
 		
 		
@@ -60,14 +68,27 @@ public class FestivalGui extends JFrame {
 				}
 			}
 		});
-
+		
+		bandPublicBox.add(publicCountLabel);
+		bandPublicBox.add(actualBandLabel);
+		
 		panel.add(startFestivalButton);
 		panel.add(changeBandButton);
 		panel.add(finishFestivalButton);
+		panel.add(bandPublicBox);
+		panel.add(publicRateBox);
 
 		
 		getContentPane().add(panel, BorderLayout.CENTER);
-		this.setSize(500, 200);
+		this.setSize(600, 200);
 		setVisible(true);
     }
+
+	public void setPublicCount(String message) {
+		this.publicCountLabel.setText(message);
+	}
+	
+	public void setActualBand(String message) {
+		this.actualBandLabel.setText(message);
+	}
 }
