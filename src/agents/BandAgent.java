@@ -49,10 +49,11 @@ public class BandAgent extends Agent {
 					// Set festival state
 					System.out.println(getName() + " stopping the show...");
 					doDelete();
+				} else if(FestivalAgent.FESTIVALSTOPPED.equals(msg.getContent())) {
+					System.out.println("Festival stopped. " + getName() + " stopping the show...");
+					doDelete();
 				}
 			}
-			
-			
 		}
 		
 	}

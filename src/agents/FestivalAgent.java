@@ -23,6 +23,7 @@ public class FestivalAgent extends Agent {
 	
 	// MESSAGE TYPES
 	public final static String LETSROCK = "LETSROCK";
+	public final static String FESTIVALSTOPPED = "FESTIVALSTOPPED";
 
 	private static final long serialVersionUID = 1L;
 	private FestivalGui gui;
@@ -101,7 +102,7 @@ public class FestivalAgent extends Agent {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			startBand("Banda 2");
+			startBand("Dream Theater");
 		}
 		
 	}
@@ -113,13 +114,33 @@ public class FestivalAgent extends Agent {
 		@Override
 		public void action() {
 			// TODO Auto-generated method stub
-			System.out.println("Festival-agent "+getAID().getName()+" terminating.");
+			ACLMessage stopFestival = new ACLMessage(ACLMessage.INFORM);
+			stopFestival.setContent(FESTIVALSTOPPED);
+			for(AgentController agent : publicList) {
+				try {
+					stopFestival.addReceiver(new AID(agent.getName(), AID.ISGUID));
+					send(stopFestival);
+				} catch (StaleProxyException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
+			try {
+				stopFestival.addReceiver(new AID(actualBand.getName(), AID.ISGUID));
+				send(stopFestival);
+			} catch (StaleProxyException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			System.out.println("Festival finished...");
 		}
 		
 	}
 	
 	public void startFestival(){
-		startBand("Banda 1");
+		startBand("Iron Maiden");
 		addBehaviour(new StartFestival());
 		invitePublic(10);
 		addBehaviour(new ListenPublic());

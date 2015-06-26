@@ -36,7 +36,10 @@ public class EnthusiastAgent extends Agent implements Public{
 		letsRock.setContent(FestivalAgent.LETSROCK);
 		letsRock.addReceiver(new AID("RockInParadigmas", AID.ISLOCALNAME));
 		send(letsRock);
+		
+		addBehaviour(new ListenFestivalOrders());
 	}
+	
 	private class Applause extends CyclicBehaviour{
 
 		private static final long serialVersionUID = 1L;
@@ -44,6 +47,25 @@ public class EnthusiastAgent extends Agent implements Public{
 		@Override
 		public void action() {
 			// TODO Auto-generated method stub
+			
+		}
+		
+	}
+	
+	private class ListenFestivalOrders extends CyclicBehaviour {
+		private static final long serialVersionUID = 1L;
+		
+		@Override
+		public void action() {
+			// TODO Auto-generated method stub
+			ACLMessage msg = receive();
+			
+			if(msg != null) {
+				if(FestivalAgent.FESTIVALSTOPPED.equals(msg.getContent())) {
+					System.out.println("Festival stopped. " + getName() + " leaving the festival...");
+					doDelete();
+				}
+			}
 			
 		}
 		
